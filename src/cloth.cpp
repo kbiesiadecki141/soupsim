@@ -109,7 +109,9 @@ void Cloth::buildGrid() {
 
   return;
 }
-
+/*
+ * This function runs one time step of the cloth simulation.
+ */
 void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
@@ -117,19 +119,56 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
   // TODO (Part 2): Compute total force acting on each point mass.
+  // external forces + spring correction forces
+  // point_mass.forces= external_accelerations + sum(ks(||pa-pb|| - l))
 
+  for (auto &p : point_masses) {
+    // 0. Clear/reset forces
+    p.forces = Vector3D(0,0,0);
 
-  // TODO (Part 2): Use Verlet integration to compute new point mass positions
-
-
-  // TODO (Part 4): Handle self-collisions.
-
-
-  // TODO (Part 3): Handle collisions with other primitives.
-
-
-  // TODO (Part 2): Constrain the changes to be such that the spring does not change
-  // in length more than 10% per timestep [Provot 1995].
+    // 1. Compute total f_ext (F = ma)
+    for (Vector3D a : external_accelerations) {
+      p.forces += mass * a;
+    } 
+  }
+     
+   // 2. Apply spring correction forces. (equal+opposite)
+  for (Spring s : springs) {
+    if (s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) {
+      Vector3D f = cp->ks * ((s.pm_a->position - s.pm_b->position).norm() - s.rest_length);
+      s.pm_a->forces += f;
+      s.pm_b->forces -= f;
+    }
+    if (s.spring_type == SHEARING && !cp->enable_shearing_constraints) {
+      Vector3D f = cp->ks * ((s.pm_a->position - s.pm_b->position).norm() - s.rest_length);
+      s.pm_a->forces += f;
+      s.pm_b->forces -= f;
+    }
+    if (s.spring_type == BENDING && !cp->enable_bending_constraints) {
+      // bending constraint should be weaker than the above ^
+      Vector3D f = 0.2*cp->ks * ((s.pm_a->position - s.pm_b->position).norm() - s.rest_length);
+      s.pm_a->forces += f;
+      s.pm_b->forces -= f;
+    }
+   }
+    
+    
+  
+    
+    
+  
+    // TODO (Part 2): Use Verlet integration to compute new point mass positions
+  
+  
+    // TODO (Part 4): Handle self-collisions.
+  
+  
+    // TODO (Part 3): Handle collisions with other primitives.
+  
+  
+    // TODO (Part 2): Constrain the changes to be such that the spring does not change
+    // in length more than 10% per timestep [Provot 1995].
+  }
 
 }
 
