@@ -168,13 +168,13 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   // TODO (Part 4): Handle self-collisions.
 
   // TODO (Part 3): Handle collisions with other primitives.
+  // FIXME combine loop with other parts
   for (auto &p : point_masses) {
     for (auto *co : *collision_objects) {
       co->collide(p);
     }
   }
   
-
 
   // TODO (Part 2): Constrain the changes to be such that the spring does not change
   // in length more than 10% per timestep [Provot 1995].
@@ -206,7 +206,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
       }
     }
   }
- }
+}
 
 void Cloth::build_spatial_map() {
   for (const auto &entry : map) {
@@ -221,9 +221,9 @@ void Cloth::build_spatial_map() {
     float hash = hash_position(p.position);
     std::vector<PointMass *> v = *(map[hash]);
     v.push_back(&p);
-    
+
   }
-  */ 
+  */
 }
 
 void Cloth::self_collide(PointMass &pm, double simulation_steps) {
