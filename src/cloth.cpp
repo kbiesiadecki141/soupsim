@@ -133,7 +133,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   }
      
    // 2. Apply spring correction forces. (equal+opposite)
-  for (Spring s : springs) {
+  for (auto &s : springs) {
     if (s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) {
       Vector3D f = cp->ks * ((s.pm_a->position - s.pm_b->position).norm() - s.rest_length);
       s.pm_a->forces += f;
@@ -164,6 +164,12 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   
   
     // TODO (Part 3): Handle collisions with other primitives.
+    // FIXME combine loop with other parts
+    for (auto &p : point_masses) {
+      for (auto &co : collision_objects) {
+        co.collide(p);
+      }
+    }
   
   
     // TODO (Part 2): Constrain the changes to be such that the spring does not change
@@ -189,8 +195,19 @@ void Cloth::self_collide(PointMass &pm, double simulation_steps) {
 
 float Cloth::hash_position(Vector3D pos) {
   // TODO (Part 4): Hash a 3D position into a unique float identifier that represents membership in some 3D box volume.
-
-  return 0.f; 
+  /*
+  float w = 3 * width / num_width_points;
+  float h = 3 * height / num_height_points;
+  float t = max(w, h);
+  Vector3D new_pos = pos; // bad this points fixme later
+  new_pos.x %= w; 
+  new_pos.y %= h; 
+  new_pos.z %= t; 
+  
+  // this is a pure guess lol
+  return fmod(new_pos.x, fmod(new_pos.y, new_pos.z));
+  */
+  return 1;
 }
 
 ///////////////////////////////////////////////////////
