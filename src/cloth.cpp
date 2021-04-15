@@ -167,6 +167,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     // TODO (Part 3): Handle collisions with other primitives.
     // FIXME combine loop with other parts
     for (auto &p : point_masses) {
+      self_collide(p, simulation_steps);
       for (auto *co : *collision_objects) {
         co->collide(p);
       }
@@ -189,13 +190,26 @@ void Cloth::build_spatial_map() {
     float hash = hash_position(p.position);
     std::vector<PointMass *> v = *(map[hash]);
     v.push_back(&p);
-    
   }
 }
 
 void Cloth::self_collide(PointMass &pm, double simulation_steps) {
   // TODO (Part 4): Handle self-collision for a given point mass.
-
+  Vector3D correction = Vector3D(0, 0, 0);
+  for (auto p : point_masses) {
+    if (p.position == pm.position) {
+      continue;
+    }
+    float r = (p.position-pm.position).norm();
+    if (r < 2*thickness) {
+      correction += p.position + r * (2.0*thickness);
+      correction -= pm.position;
+    }
+  }
+  // the final correction vector is the average of all these 
+  // pairwise correction vectors scales down by sim_steps
+  correction /= simulation_steps;
+  pm.position = pm.position + correction;
 }
 
 float Cloth::hash_position(Vector3D pos) {
@@ -203,13 +217,15 @@ float Cloth::hash_position(Vector3D pos) {
   float w = 3 * width / num_width_points;
   float h = 3 * height / num_height_points;
   float t = max(w, h);
-  Vector3D new_pos = pos; // bad this points fixme later
-  new_pos.x = fmod(new_pos.x, w);  
-  new_pos.y = fmod(new_pos.y, h);  
-  new_pos.z = fmod(new_pos.z, t);  
+
+  Vector3D new_pos;
+  new_pos.x = fmod(pos.x, w);  
+  new_pos.y = fmod(pos.y, h);  
+  new_pos.z = fmod(pos.z, t);  
   
-  // this is a pure guess lol
-  return fmod(new_pos.x, fmod(new_pos.y, new_pos.z));
+  // https://stackoverflow.com/questions/25649342/hash-function-for-3d-integer-coordinates 
+  // note: x, y, z are constrained by (0, 1) so this should never overflow
+  return (new_pos.x * 31) + (new_pos.y * 37) + (new_pos.z * 41); 
 }
 
 ///////////////////////////////////////////////////////
