@@ -17,7 +17,8 @@ void Sphere::collide(PointMass &pm) {
   if (p2s_radius <= radius2) {
     // 2. Compute the correction vector to apply to last_position in
     //    order to reach the tangent point.
-    Vector3D correction = origin + dir.normalize() * radius; // ray eqn
+    dir.normalize();
+    Vector3D correction = origin + dir * radius; // ray eqn
     correction -= pm.last_position; 
 
     // 3. Update position to be last position adjusted by correction
