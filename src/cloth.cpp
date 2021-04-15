@@ -43,9 +43,49 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
   // TODO (Part 2): Compute total force acting on each point mass.
 
+  Vector3D ext_force = Vector3D();
+  for (Vector3D a : external_accelerations) {
+    ext_force += a * mass;
+  }
+
+  for (PointMass p : point_masses) {
+    p.forces = ext_force;
+  }
+
+  for (Spring s: springs) {
+    if (cp->enable_structural_constraints && s.spring_type == STRUCTURAL ||
+      cp->enable_shearing_constraints && s.spring_type == SHEARING ||
+       cp->enable_bending_constraints && s.spring_type == BENDING) { // run if enabled
+         float bend = s.spring_type == BENDING ? .2 : 1.0;
+      Vector3D spring_force = (bend * cp->ks) * (abs(s.pm_a - s.pm_b) - s.rest_length);
+      s.pm_a->forces += spring_force;
+      s.pm_b->forces += -spring_force;
+    }
+  }
 
   // TODO (Part 2): Use Verlet integration to compute new point mass positions
 
+  for (PointMass p : point_masses) {
+    if (!p.pinned) {
+      Vector3D pos = p.position + (1.0 - (cp->damping / 100)) * (p.position - p.last_position) + p.forces / mass * delta_t * delta_t;
+      p.last_position = p.position;
+      p.position = pos;
+    }
+  }
+
+// for (auto &p : point_masses) {
+//   p.forces = Vector3D(0, 0, 0);
+//
+//   for (Vector3D a : external_accelerations) {
+//     p.forces += mass * a;
+//   }
+// }
+//
+// for (Spring s : springs) {
+//   if (s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) {
+//     Vector3D f = cp->ks * ((s.pm_a ))
+//   }
+// }
 
   // TODO (Part 4): Handle self-collisions.
 
@@ -55,6 +95,22 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
   // TODO (Part 2): Constrain the changes to be such that the spring does not change
   // in length more than 10% per timestep [Provot 1995].
+
+// For each spring, apply this constraint by correcting the two point masses' positions
+// such that the spring's length is at most 10% greater than its rest_length
+// at the end of any time step. Maintain the same vector direction between the two point masses
+// and only modify their distance apart from each other. Perform half of the correction to
+// each point mass, unless one of them is pinned, in which case apply the correction
+// entirely to one point mass. Do nothing if both are pinned (they wouldn't satisfy
+// the condition anyways, by construction; can you see why?).
+
+  // for (Spring s : this->springs) {
+  //   if (abs(s.pm_A.position - s.pm_B.position) > s.rest_length * 1.1) {
+  //
+  //   }
+  // }
+
+
 
 }
 
@@ -76,7 +132,7 @@ void Cloth::self_collide(PointMass &pm, double simulation_steps) {
 float Cloth::hash_position(Vector3D pos) {
   // TODO (Part 4): Hash a 3D position into a unique float identifier that represents membership in some 3D box volume.
 
-  return 0.f; 
+  return 0.f;
 }
 
 ///////////////////////////////////////////////////////
@@ -116,7 +172,7 @@ void Cloth::buildClothMesh() {
        * pm_C -------- pm_D   *
        *                      *
        */
-      
+
       float u_min = x;
       u_min /= num_width_points - 1;
       float u_max = x + 1;
@@ -125,22 +181,22 @@ void Cloth::buildClothMesh() {
       v_min /= num_height_points - 1;
       float v_max = y + 1;
       v_max /= num_height_points - 1;
-      
+
       PointMass *pm_A = pm                       ;
       PointMass *pm_B = pm                    + 1;
       PointMass *pm_C = pm + num_width_points    ;
       PointMass *pm_D = pm + num_width_points + 1;
-      
+
       Vector3D uv_A = Vector3D(u_min, v_min, 0);
       Vector3D uv_B = Vector3D(u_max, v_min, 0);
       Vector3D uv_C = Vector3D(u_min, v_max, 0);
       Vector3D uv_D = Vector3D(u_max, v_max, 0);
-      
-      
+
+
       // Both triangles defined by vertices in counter-clockwise orientation
-      triangles.push_back(new Triangle(pm_A, pm_C, pm_B, 
+      triangles.push_back(new Triangle(pm_A, pm_C, pm_B,
                                        uv_A, uv_C, uv_B));
-      triangles.push_back(new Triangle(pm_B, pm_C, pm_D, 
+      triangles.push_back(new Triangle(pm_B, pm_C, pm_D,
                                        uv_B, uv_C, uv_D));
     }
   }
