@@ -35,7 +35,7 @@ Cloth::~Cloth() {
 void Cloth::buildGrid() {
   // TODO (Part 1): Build a grid of masses and springs.
   // Evenly-spaced grid over (0,0):(width, height)
-  // row-major order! i.e. vector[j * width + i] for (i, j) 
+  // row-major order! i.e. vector[j * width + i] for (i, j)
 
   // POPULATE GRID WITH MASSES
   // =======================================================
@@ -43,20 +43,20 @@ void Cloth::buildGrid() {
   float min_j = 0;
   float max_i = width;
   float max_j = height;
-  float delta_i = (max_i - min_i)/num_width_points; 
-  float delta_j = (max_j - min_j)/num_height_points; 
+  float delta_i = (max_i - min_i)/num_width_points;
+  float delta_j = (max_j - min_j)/num_height_points;
 
   for (int j = 0; j < num_height_points; j++) {
     for (int i = 0; i < num_width_points; i++) {
       Vector3D position;
       if (orientation == HORIZONTAL) {
         // set y coordinate to 1 for all point masses while varying x,z
-        position[0] = i*delta_i;   
-        position[1] = 1;   
-        position[2] = j*delta_j;   
+        position[0] = i*delta_i;
+        position[1] = 1;
+        position[2] = j*delta_j;
       } else { // == VERTICAL
-        position[0] = i*delta_i;   
-        position[1] = j*delta_j;   
+        position[0] = i*delta_i;
+        position[1] = j*delta_j;
 
         // generate a small random offset --> z
         // https://stackoverflow.com/questions/686353/random-float-number-generation#:~:text=In%20modern%20c%2B%2B%20you,and%20distribution%20to%20be%20static%20.
@@ -69,10 +69,20 @@ void Cloth::buildGrid() {
 
       // the pinned vector stores the INDICES!! of pinned masses - not the positions!
       // if inside pinned vector, pinned = true!
-      std::vector<int> xy;
-      xy.push_back(position[1]);
-      xy.push_back(position[0]);
-      bool pin = std::find(pinned.begin(), pinned.end(), xy) != pinned.end();
+
+      // std::vector<int> xy;
+      // xy.push_back(position[1]);
+      // xy.push_back(position[0]);
+      // bool pin = std::find(pinned.begin(), pinned.end(), xy) != pinned.end();
+      bool pin = false;
+      for (vector<int> v : pinned) {
+        if (v[0] == j && v[1] == i) {
+          pin = true;
+          continue;
+        }
+      }
+
+      // std::cout << pin << '\n';
       point_masses.push_back(PointMass(position, pin));
     }
   }
@@ -95,17 +105,17 @@ void Cloth::buildGrid() {
       }
 
       if (x-1 >= 0) {
-        springs.push_back(Spring(pm, pm-1, STRUCTURAL)); // left 
+        springs.push_back(Spring(pm, pm-1, STRUCTURAL)); // left
         if (y-1 >= 0) {
           springs.push_back(Spring(pm, pm-num_width_points-1, SHEARING)); // diagonal left
         }
         if (x-2 >= 0) {
           springs.push_back(Spring(pm, pm-2, BENDING)); // two left
         }
-        
+
       }
     }
-  } 
+  }
 
   return;
 }
@@ -123,44 +133,36 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     ext_force += a * mass;
   }
 
-  for (PointMass p : point_masses) {
+  for (PointMass &p : point_masses) {
     p.forces = ext_force;
   }
 
   for (Spring s: springs) {
-    if (cp->enable_structural_constraints && s.spring_type == STRUCTURAL ||
-      cp->enable_shearing_constraints && s.spring_type == SHEARING ||
-       cp->enable_bending_constraints && s.spring_type == BENDING) { // run if enabled
-         float bend = s.spring_type == BENDING ? .2 : 1.0;
-      Vector3D spring_force = (bend * cp->ks) * (abs(s.pm_a - s.pm_b) - s.rest_length);
+    if (cp->enable_structural_constraints && s.spring_type == STRUCTURAL
+      || cp->enable_shearing_constraints && s.spring_type == SHEARING
+      || cp->enable_bending_constraints && s.spring_type == BENDING) { // run if enabled
+
+      float bend = s.spring_type == BENDING ? .2 : 1.0;
+
+      Vector3D direction = (s.pm_b->position - s.pm_a->position);
+      direction.normalize();
+
+      Vector3D spring_force = (bend * cp->ks) * (abs((s.pm_a->position - s.pm_b->position).norm()) - s.rest_length) * direction;
+
+
       s.pm_a->forces += spring_force;
       s.pm_b->forces += -spring_force;
     }
   }
 
   // TODO (Part 2): Use Verlet integration to compute new point mass positions
-
-  for (PointMass p : point_masses) {
+  for (PointMass &p : point_masses) {
     if (!p.pinned) {
       Vector3D pos = p.position + (1.0 - (cp->damping / 100)) * (p.position - p.last_position) + p.forces / mass * delta_t * delta_t;
       p.last_position = p.position;
       p.position = pos;
     }
   }
-
-// for (auto &p : point_masses) {
-//   p.forces = Vector3D(0, 0, 0);
-//
-//   for (Vector3D a : external_accelerations) {
-//     p.forces += mass * a;
-//   }
-// }
-//
-// for (Spring s : springs) {
-//   if (s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) {
-//     Vector3D f = cp->ks * ((s.pm_a ))
-//   }
-// }
 
   // TODO (Part 4): Handle self-collisions.
 
@@ -179,15 +181,26 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 // entirely to one point mass. Do nothing if both are pinned (they wouldn't satisfy
 // the condition anyways, by construction; can you see why?).
 
-  // for (Spring s : this->springs) {
-  //   if (abs(s.pm_A.position - s.pm_B.position) > s.rest_length * 1.1) {
-  //
-  //   }
-  // }
+  for (Spring s : springs) {
+    if ((abs((s.pm_a->position - s.pm_b->position).norm()) > s.rest_length * 1.1) && !(s.pm_a->pinned && s.pm_b->pinned)) {
 
+      Vector3D direction = (s.pm_a->position - s.pm_b->position);
+      direction.normalize();
 
+      // calculate how far out the point has overshot
+      auto change = abs((abs((s.pm_a->position - s.pm_b->position).norm()) - s.rest_length * 1.1)) * direction;
 
-}
+      if (s.pm_a->pinned) {
+        s.pm_b->position += change;
+      } else if (s.pm_b->pinned) {
+        s.pm_a->position -= change;
+      } else {
+        s.pm_b->position += change * .5;
+        s.pm_a->position -= change * .5;
+      }
+    }
+  }
+ }
 
 void Cloth::build_spatial_map() {
   for (const auto &entry : map) {
