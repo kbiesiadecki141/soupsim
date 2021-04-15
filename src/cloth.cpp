@@ -124,6 +124,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
   for (auto &p : point_masses) {
     // 0. Clear/reset forces
+    // perhaps call delete(p.forces) ?
     p.forces = Vector3D(0,0,0);
 
     // 1. Compute total f_ext (F = ma)
@@ -166,16 +167,14 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     // TODO (Part 3): Handle collisions with other primitives.
     // FIXME combine loop with other parts
     for (auto &p : point_masses) {
-      for (auto &co : collision_objects) {
-        co.collide(p);
+      for (auto *co : *collision_objects) {
+        co->collide(p);
       }
     }
   
   
     // TODO (Part 2): Constrain the changes to be such that the spring does not change
     // in length more than 10% per timestep [Provot 1995].
-  }
-
 }
 
 void Cloth::build_spatial_map() {
@@ -185,7 +184,13 @@ void Cloth::build_spatial_map() {
   map.clear();
 
   // TODO (Part 4): Build a spatial map out of all of the point masses.
-
+  // unordered_map<float, vector<PointMass *> *>
+  for (auto &p : point_masses) {
+    float hash = hash_position(p.position);
+    std::vector<PointMass *> v = *(map[hash]);
+    v.push_back(&p);
+    
+  }
 }
 
 void Cloth::self_collide(PointMass &pm, double simulation_steps) {
@@ -195,19 +200,16 @@ void Cloth::self_collide(PointMass &pm, double simulation_steps) {
 
 float Cloth::hash_position(Vector3D pos) {
   // TODO (Part 4): Hash a 3D position into a unique float identifier that represents membership in some 3D box volume.
-  /*
   float w = 3 * width / num_width_points;
   float h = 3 * height / num_height_points;
   float t = max(w, h);
   Vector3D new_pos = pos; // bad this points fixme later
-  new_pos.x %= w; 
-  new_pos.y %= h; 
-  new_pos.z %= t; 
+  new_pos.x = fmod(new_pos.x, w);  
+  new_pos.y = fmod(new_pos.y, h);  
+  new_pos.z = fmod(new_pos.z, t);  
   
   // this is a pure guess lol
   return fmod(new_pos.x, fmod(new_pos.y, new_pos.z));
-  */
-  return 1;
 }
 
 ///////////////////////////////////////////////////////
