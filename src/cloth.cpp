@@ -1,6 +1,8 @@
 #include <iostream>
 #include <math.h>
 #include <random>
+#include <cstdlib>
+#include <ctime>
 #include <vector>
 
 #include "cloth.h"
@@ -32,9 +34,84 @@ Cloth::~Cloth() {
 
 void Cloth::buildGrid() {
   // TODO (Part 1): Build a grid of masses and springs.
+  // Evenly-spaced grid over (0,0):(width, height)
+  // row-major order! i.e. vector[j * width + i] for (i, j)
 
+  // POPULATE GRID WITH MASSES
+  // =======================================================
+  float min_i = 0;
+  float min_j = 0;
+  float max_i = width;
+  float max_j = height;
+  float delta_i = (max_i - min_i)/num_width_points;
+  float delta_j = (max_j - min_j)/num_height_points;
+
+  for (int j = 0; j < num_height_points; j++) {
+    for (int i = 0; i < num_width_points; i++) {
+      Vector3D position;
+      if (orientation == HORIZONTAL) {
+        // set y coordinate to 1 for all point masses while varying x,z
+        position[0] = i*delta_i;
+        position[1] = 1;
+        position[2] = j*delta_j;
+      } else { // == VERTICAL
+        position[0] = i*delta_i;
+        position[1] = j*delta_j;
+
+        // generate a small random offset --> z
+        // https://stackoverflow.com/questions/686353/random-float-number-generation#:~:text=In%20modern%20c%2B%2B%20you,and%20distribution%20to%20be%20static%20.
+        float HI =  1.0/1000;
+        float LO = -1.0/1000;
+        //srand (static_cast <unsigned> (time(0))); // random seed
+        position[2] = LO + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI-LO)));
+
+      }
+
+      // the pinned vector stores the INDICES!! of pinned masses - not the positions!
+      // if inside pinned vector, pinned = true!
+      std::vector<int> xy;
+      xy.push_back(position[1]);
+      xy.push_back(position[0]);
+      bool pin = std::find(pinned.begin(), pinned.end(), xy) != pinned.end();
+      point_masses.push_back(PointMass(position, pin));
+    }
+  }
+
+  // POPULATE GRID WITH SPRINGS
+  // =======================================================
+  for (int y = 0; y < num_height_points; y++) {
+    for (int x = 0; x < num_width_points; x++) {
+      // is this actually the easier way?
+      PointMass * pm = &point_masses[y * num_width_points + x];
+
+      if (y > 0) {
+        springs.push_back(Spring(pm, pm-num_width_points, STRUCTURAL)); // one above
+        if (x+1 < num_width_points) {
+          springs.push_back(Spring(pm, pm-num_width_points+1, SHEARING)); // diagonal right
+        }
+        if (y-2 >= 0) {
+          springs.push_back(Spring(pm, pm -2*num_width_points, BENDING)); // two above
+        }
+      }
+
+      if (x-1 >= 0) {
+        springs.push_back(Spring(pm, pm-1, STRUCTURAL)); // left
+        if (y-1 >= 0) {
+          springs.push_back(Spring(pm, pm-num_width_points-1, SHEARING)); // diagonal left
+        }
+        if (x-2 >= 0) {
+          springs.push_back(Spring(pm, pm-2, BENDING)); // two left
+        }
+
+      }
+    }
+  }
+
+  return;
 }
-
+/*
+ * This function runs one time step of the cloth simulation.
+ */
 void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
@@ -91,7 +168,12 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
 
   // TODO (Part 3): Handle collisions with other primitives.
-
+  // FIXME combine loop with other parts
+  for (auto &p : point_masses) {
+    for (auto *co : *collision_objects) {
+      co->collide(p);
+    }
+  }
 
   // TODO (Part 2): Constrain the changes to be such that the spring does not change
   // in length more than 10% per timestep [Provot 1995].
@@ -121,7 +203,15 @@ void Cloth::build_spatial_map() {
   map.clear();
 
   // TODO (Part 4): Build a spatial map out of all of the point masses.
+  // unordered_map<float, vector<PointMass *> *>
+  /*
+  for (auto &p : point_masses) {
+    float hash = hash_position(p.position);
+    std::vector<PointMass *> v = *(map[hash]);
+    v.push_back(&p);
 
+  }
+  */
 }
 
 void Cloth::self_collide(PointMass &pm, double simulation_steps) {
@@ -131,8 +221,19 @@ void Cloth::self_collide(PointMass &pm, double simulation_steps) {
 
 float Cloth::hash_position(Vector3D pos) {
   // TODO (Part 4): Hash a 3D position into a unique float identifier that represents membership in some 3D box volume.
+  /*
+  float w = 3 * width / num_width_points;
+  float h = 3 * height / num_height_points;
+  float t = max(w, h);
+  Vector3D new_pos = pos; // bad this points fixme later
+  new_pos.x = fmod(new_pos.x, w);
+  new_pos.y = fmod(new_pos.y, h);
+  new_pos.z = fmod(new_pos.z, t);
 
-  return 0.f;
+  // this is a pure guess lol
+  return fmod(new_pos.x, fmod(new_pos.y, new_pos.z));
+  */
+  return 1;
 }
 
 ///////////////////////////////////////////////////////

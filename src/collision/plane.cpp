@@ -12,7 +12,20 @@ using namespace CGL;
 
 void Plane::collide(PointMass &pm) {
   // TODO (Part 3): Handle collisions with planes.
+  // 1. Compute where the point mass should have intersected
+  //    the plane if it had traveled in a straight line from
+  //    position -> plane. (tangent point)
+  Vector3D dir = pm.position - point;
 
+  // Projection onto surface: https://piazza.com/class/kjxdpbk5sj95lb?cid=318_f5
+  double scalar_projection = dot(dir, normal);
+  if (scalar_projection < 0) { // plane intersect
+    // 2. Compute correction vector in order to reach a point slightly
+    //    above the tangent point.
+    Vector3D correction = pm.position + normal * (-scalar_projection + SURFACE_OFFSET);
+    correction -= pm.last_position;
+    pm.position = (1-friction) * correction + pm.last_position;
+  }
 }
 
 void Plane::render(GLShader &shader) {
