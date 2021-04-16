@@ -13,8 +13,8 @@ void Sphere::collide(PointMass &pm) {
   //    by extending the path between its position and the sphere's origin
   //    to the sphere's surface. (tangent point)
   Vector3D dir = pm.position - origin;
-  double p2s_radius = sqrt(dir.x*dir.x + dir.y*dir.y); // pythag
-  if (p2s_radius <= radius2) {
+  double p2s_radius = dir.norm2();
+  if (p2s_radius < radius2) {
     // 2. Compute the correction vector to apply to last_position in
     //    order to reach the tangent point.
     dir.normalize();
@@ -23,7 +23,7 @@ void Sphere::collide(PointMass &pm) {
 
     // 3. Update position to be last position adjusted by correction
     //    and scaled by 1-f.
-    pm.position = (1-friction) * correction + pm.last_position;
+    pm.position = (1.0-friction) * correction + pm.last_position;
   }
 }
 
