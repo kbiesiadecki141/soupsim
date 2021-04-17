@@ -6,8 +6,8 @@ uniform vec3 u_light_intensity;
 
 uniform vec4 u_color;
 
-uniform sampler2D u_texture_2;
-uniform vec2 u_texture_2_size;
+uniform sampler2D u_texture_4;
+uniform vec2 u_texture_4_size;
 
 uniform float u_normal_scaling;
 uniform float u_height_scaling;
@@ -20,7 +20,7 @@ in vec2 v_uv;
 out vec4 out_color;
 
 float h(vec2 uv) {
-return texture(u_texture_2, uv)[0];
+return texture(u_texture_4, uv)[0];
 }
 
 void main() {
@@ -28,8 +28,8 @@ void main() {
 
   float u = v_uv[0];
   float v0 = v_uv[1];
-  float w = u_texture_2_size[0];
-  float height = u_texture_2_size[1];
+  float w = u_texture_4_size[0];
+  float height = u_texture_4_size[1];
 
   float kh = u_height_scaling;
   float kn = u_normal_scaling;
