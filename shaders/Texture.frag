@@ -14,6 +14,5 @@ out vec4 out_color;
 
 void main() {
   // YOUR CODE HERE
-
   out_color = texture(u_texture_4, v_uv);
 }

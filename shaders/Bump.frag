@@ -26,6 +26,17 @@ float h(vec2 uv) {
 
 void main() {
   // YOUR CODE HERE
+  kh = u_texture_2.height;
+  kn = u_texture_2_size.
+
+  du = (h(u + 1/w, v) - h(u, v)) * kh * kn;
+  dv = (h(u, v+1/h) - h(u, v) * kh * kn);
+
+  vec3 n = v_normal.xyz;
+  vec3 b =
+
+  vec4 no = (-du, -dv, 1);
+  nd =
 
   // (Placeholder code. You will want to replace it.)
   out_color = (vec4(1, 1, 1, 0) + v_normal) / 2;
