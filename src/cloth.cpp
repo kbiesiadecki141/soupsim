@@ -76,7 +76,7 @@ void Cloth::buildGrid() {
       // bool pin = std::find(pinned.begin(), pinned.end(), xy) != pinned.end();
       bool pin = false;
       for (vector<int> v : pinned) {
-        if (v[0] == j && v[1] == i) {
+        if (v[0] == i && v[1] == j) {
           pin = true;
           continue;
         }
@@ -174,7 +174,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
       co->collide(p);
     }
   }
-  
+
 
   // TODO (Part 2): Constrain the changes to be such that the spring does not change
   // in length more than 10% per timestep [Provot 1995].
