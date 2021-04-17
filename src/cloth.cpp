@@ -71,7 +71,7 @@ void Cloth::buildGrid() {
       // if inside pinned vector, pinned = true!
       bool pin = false;
       for (vector<int> v : pinned) {
-        if (v[0] == j && v[1] == i) {
+        if (v[0] == i && v[1] == j) {
           pin = true;
           continue;
         }
