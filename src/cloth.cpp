@@ -69,11 +69,6 @@ void Cloth::buildGrid() {
 
       // the pinned vector stores the INDICES!! of pinned masses - not the positions!
       // if inside pinned vector, pinned = true!
-
-      // std::vector<int> xy;
-      // xy.push_back(position[1]);
-      // xy.push_back(position[0]);
-      // bool pin = std::find(pinned.begin(), pinned.end(), xy) != pinned.end();
       bool pin = false;
       for (vector<int> v : pinned) {
         if (v[0] == j && v[1] == i) {
@@ -82,7 +77,6 @@ void Cloth::buildGrid() {
         }
       }
 
-      // std::cout << pin << '\n';
       point_masses.push_back(PointMass(position, pin));
     }
   }
@@ -150,7 +144,6 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
       Vector3D spring_force = (bend * cp->ks) * (abs((s.pm_a->position - s.pm_b->position).norm()) - s.rest_length) * direction;
 
-
       s.pm_a->forces += spring_force;
       s.pm_b->forces += -spring_force;
     }
@@ -174,15 +167,11 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
       co->collide(p);
     }
   }
-  
-  // TODO (Part 3): Handle collisions with other primitives.
-  // FIXME combine loop with other parts
+
+  build_spatial_map();
   for (auto &p : point_masses) {
-    // self_collide(p, simulation_steps);
-    for (auto *co : *collision_objects) {
-      co->collide(p);
-    }
-  }
+    self_collide(p, simulation_steps);
+  }   
 
   // TODO (Part 2): Constrain the changes to be such that the spring does not change
   // in length more than 10% per timestep [Provot 1995].
@@ -226,44 +215,63 @@ void Cloth::build_spatial_map() {
   // unordered_map<float, vector<PointMass *> *>
   for (auto &p : point_masses) {
     float hash = hash_position(p.position);
-    std::vector<PointMass *> v = *(map[hash]);
-    v.push_back(&p);
+    vector<PointMass *>* v = new vector<PointMass *>();
+    if (map[hash] == NULL) {
+      map[hash] = v;
+    }
+    v = map[hash];
+    v->push_back(&p);
   }
 }
 
 void Cloth::self_collide(PointMass &pm, double simulation_steps) {
   // TODO (Part 4): Handle self-collision for a given point mass.
+  vector<PointMass *> *v = map[hash_position(pm.position)];
   Vector3D correction = Vector3D(0, 0, 0);
-  for (auto p : point_masses) {
-    if (p.position == pm.position) {
+  int count = 0;
+  for (auto *p : *v) {
+    if (p == &pm) {
       continue;
     }
-    float r = (p.position-pm.position).norm();
-    if (r < 2*thickness) {
-      correction += p.position + r * (2.0*thickness);
-      correction -= pm.position;
+  
+// two aspects: for each candidate oint pass, 
+// shoud e in the direction that points away from the
+// point mass. once you apply it to the position,
+// it should brig you 2*thickness from candidate mass and point mass
+// lenght bringing you to 2.0*thickness
+
+    // im being a idiot sad
+    // correction applied to the point mass (pm) not p
+    // want distance tween pm and p to e 2*thickness
+    Vector3D dir = p->position-pm.position; 
+    if (dir.norm() <= 2.0*thickness) { // is this within range?
+      correction += (2.0*thickness - dir.norm())*dir;
+
+      count++;
     }
   }
+
   // the final correction vector is the average of all these 
   // pairwise correction vectors scales down by sim_steps
-  correction /= simulation_steps;
-  pm.position = pm.position + correction;
+  if (count > 0) {
+    correction /= count; // average it out
+    pm.position = pm.position + correction/simulation_steps; // scale down
+  }
 }
 
 float Cloth::hash_position(Vector3D pos) {
   // TODO (Part 4): Hash a 3D position into a unique float identifier that represents membership in some 3D box volume.
+
   float w = 3 * width / num_width_points;
   float h = 3 * height / num_height_points;
   float t = max(w, h);
 
   Vector3D new_pos;
-  new_pos.x = fmod(pos.x, w);  
-  new_pos.y = fmod(pos.y, h);  
-  new_pos.z = fmod(pos.z, t);  
-  
-  // https://stackoverflow.com/questions/25649342/hash-function-for-3d-integer-coordinates 
-  // note: x, y, z are constrained by (0, 1) so this should never overflow
-  return (new_pos.x * 31) + (new_pos.y * 37) + (new_pos.z * 41); 
+  new_pos.x = floor(pos.x / w);
+  new_pos.y = floor(pos.y / h);
+  new_pos.z = floor(pos.z / t);
+
+  return new_pos.x * 31 + new_pos.y * 37 + new_pos.z * 41;
 }
 
 ///////////////////////////////////////////////////////
