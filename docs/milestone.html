@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>CS 184 Final Project</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark" style="height:65px;">
+  <ul class="navbar-nav mr-auto flex-row">
+  	<li> <a class="nav-link" href="index.html" style="font-size:125%;">Home</a>  </li>
+  	<li> <a class="nav-link" href="milestone.html" style="font-size:125%;">Milestone</a></li>
+  </ul>
+</nav>
+
+
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2021</h1>
+<h1 align="middle">Project Proposal: SoupSim</h1>
+<h2 align="middle">Thomas Glezen, Amy Liu, Joshua Yang, Katelyn Biesiadecki</h2>
+
+<h1>Doc</h1>
+<hr>
+<h2 align="middle">Progress Check</h2>
+<ul>
+  <li>Imported project 4 code<ul>
+      <li>We decided that since we are going to be using a particle based system that we could use many of the like structures from project 4: cloth simulator.
+        By using mass points and springs, we hope to well simulate fluid dynamics. </li></ul></li>
+  <li>Planned general code layout and project structure<ul>
+    <li>For this project, we decided to use a lot of supporting libraries, many of which can be found in previous projects. (eg. CGL)
+      However, there are many things that we are in the process of developing. For example, given a starting environment, how can we have the water go sploosh sploosh?
+      One idea is that we can attempt to load a json file as well which can contain the position and properties of the water particles.
+      This enables us to quickly create scenes for us to explore. </li>
+  </ul></li>
+  <li>Exploring Berkeley Gfx<ul>
+    <li>Progress is not always linear and often what paths we take for development.
+      Currently we are experimenting with the use of Berkeley Gfx shaders.
+      We hope that we end up using Berkeley Gfx in our final project, however only time and hard work will tell.</li>
+  </ul></li>
+  <li>Research Smooth Particle Hydrodynamics<ul>
+    <li>We are all smooth brains who really do be out here choosing a fluid simulation based project while knowing fuckall about fluid dynamics. However, the knowledge required to understand fluid dynamics can be quickly overturned by the power of friendship and our desire to learn! </li>
+    <li>As a result, we have been dedicating time into learning how particles in fluid systems should react. </li>
+  </ul></li>
+</ul>
+
+Since we are unable to actually write code and test our implementation until setup is complete, we decided to multitask by creating pseudocode and researching physics. The general pseudocode (without yet implementing viscosity) is as follows:
+<hr>
+pseudocode
+
+<p style="text-indent: 2em;">
+  Initialize all particles
+</p>
+<p style="text-indent: 2em;">
+  Set t = 0
+</p>
+<p style="text-indent: 2em;">
+  Choose a ∆t
+</p>
+<p style="text-indent: 2em;">
+  for i from 0 to n
+</p>
+<p style="text-indent: 3em;">
+  for j from 1 to numparticles
+</p>
+
+<p style="text-indent: 4em;">
+  Get list Lj of neighbors for Pj
+</p>
+
+<p style="text-indent: 4em;">
+  Calculate Densityj for Pj using Lj
+</p>
+
+<p style="text-indent: 4em;">
+  Calculate Pressurej for Pj using Lj
+</p>
+
+<p style="text-indent: 4em;">
+  Calculate acceleration Aj for Pj using Densityj and Pressurej
+</p>
+
+<p style="text-indent: 4em;">
+  Move Pj using Aj and ∆t using Euler step t = t + ∆t
+</p>
+
+<p style="text-indent: 2em;">
+  Cleanup all data structures
+</p>
+
+<p style="text-indent: 2em;">
+  Exit
+</p>
+
+
+<h2 align="middle">Progress Relative to Plan</h2>
+Unfortunately, we’re not as far along into implementation as we’d like to be, given that the research and the setup were harder than anticipated. Luckily, we planned a buffer week to allow for these issues. Additionally, with the upcoming dead week and the end of live classes, we should be able to devote more time to grinding on the project. Thus, we don’t feel like we need to amend our work plan.
+
+<hr>
+
+<h1>Slides</h1>
+<!--<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTTy3znd9wCQDb_74m4_N5RsjsZ-iLBHGmRH1KjMPjXJDM2JwVv7ybZyCQ5coFrzUqhT9YZ4tDGdaNB/embed?start=false&loop=false&delayms=5000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>-->
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTTy3znd9wCQDb_74m4_N5RsjsZ-iLBHGmRH1KjMPjXJDM2JwVv7ybZyCQ5coFrzUqhT9YZ4tDGdaNB/embed?start=false&loop=false&delayms=5000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+<hr>
+<h1>Demo</h1>
+<iframe width="790" height="494" src="https://www.youtube.com/embed/JU-r92hvyn0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+</body>
+</html>
