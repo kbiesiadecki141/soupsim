@@ -197,6 +197,7 @@ void Cloth::buildGrid() {
       // is this actually the easier way?
       PointMass * pm = &point_masses[y * num_width_points + x];
 
+
       if (y > 0) {
         springs.push_back(Spring(pm, pm-num_width_points, STRUCTURAL)); // one above
         if (x+1 < num_width_points) {
