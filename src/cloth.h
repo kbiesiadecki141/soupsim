@@ -48,6 +48,7 @@ struct Cloth {
   ~Cloth();
 
   void buildGrid();
+  void buildCircle();
 
   void simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
                 vector<Vector3D> external_accelerations,

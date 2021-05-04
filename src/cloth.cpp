@@ -19,7 +19,8 @@ Cloth::Cloth(double width, double height, int num_width_points,
   this->num_height_points = num_height_points;
   this->thickness = thickness;
 
-  buildGrid();
+  //buildGrid();
+  buildCircle();
   buildClothMesh();
 }
 
@@ -32,6 +33,104 @@ Cloth::~Cloth() {
   }
 }
 
+void Cloth::buildCircle() {
+  // TODO (Part 1): Build a grid of masses and springs.
+  // Evenly-spaced grid over (0,0):(width, height)
+  // row-major order! i.e. vector[j * width + i] for (i, j)
+
+  // POPULATE GRID WITH MASSES
+  // =======================================================
+  // assert width == height
+  if (width != height) { return; }
+
+  float min_i = 0;
+  float min_j = 0;
+  float max_i = width;
+  float max_j = height;
+  float delta_i = (max_i - min_i)/num_width_points;
+  float delta_j = (max_j - min_j)/num_height_points;
+
+  Vector3D center = Vector3D(0,1,0);
+  float radius = 0.5*width;
+
+  printf("safe entry");
+  getchar();
+  for (int j = 0; j < num_height_points; j++) {
+    for (int i = 0; i < num_width_points; i++) {
+      Vector3D position;
+      if (orientation == HORIZONTAL) {
+        // set y coordinate to 1 for all point masses while varying x,z
+
+        position[0] = i*delta_i;
+        position[1] = 1;
+        position[2] = j*delta_j;
+
+        float r2 = pow(radius,2);
+
+        float inside_circle = pow(position[0]-center.x, 2) + pow(position[1]-center.y, 2);
+
+        // perimeter of circle is pinned
+        bool pin = false;
+        if (abs(inside_circle - r2) < 0.1) { pin = true; }
+
+        if (inside_circle < r2) {
+          point_masses.push_back(PointMass(position, pin));
+        }
+
+      } else { // == VERTICAL
+        position[0] = i*delta_i;
+        position[1] = j*delta_j;
+
+        // generate a small random offset --> z
+        // https://stackoverflow.com/questions/686353/random-float-number-generation#:~:text=In%20modern%20c%2B%2B%20you,and%20distribution%20to%20be%20static%20.
+        float HI =  1.0/1000;
+        float LO = -1.0/1000;
+        position[2] = LO + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI-LO)));
+
+        point_masses.push_back(PointMass(position, true));
+      }
+    }
+  }
+
+
+  // POPULATE GRID WITH SPRINGS
+  // =======================================================
+  int count = 0;
+  for (auto &pm : point_masses) {
+      // TODO: Add a check to see if the pm is pinned - then, ignore constraint
+
+      Vector3D pos = pm.position;
+      
+      // structural: one above and one left
+      if (count < point_masses.size()) 
+          springs.push_back(Spring(&pm, &pm + 1, STRUCTURAL));
+      count++; 
+
+      /*
+      if (y > 0) {
+        springs.push_back(Spring(pm, pm-num_width_points, STRUCTURAL)); // one above
+        if (x+1 < num_width_points) {
+          springs.push_back(Spring(pm, pm-num_width_points+1, SHEARING)); // diagonal right
+        }
+        if (y-2 >= 0) {
+          springs.push_back(Spring(pm, pm -2*num_width_points, BENDING)); // two above
+        }
+      }
+
+      if (x-1 >= 0) {
+        springs.push_back(Spring(pm, pm-1, STRUCTURAL)); // left
+        if (y-1 >= 0) {
+          springs.push_back(Spring(pm, pm-num_width_points-1, SHEARING)); // diagonal left
+        }
+        if (x-2 >= 0) {
+          springs.push_back(Spring(pm, pm-2, BENDING)); // two left
+        }
+      }
+      */
+  }
+  return;
+}
+
 void Cloth::buildGrid() {
   // TODO (Part 1): Build a grid of masses and springs.
   // Evenly-spaced grid over (0,0):(width, height)
@@ -39,12 +138,15 @@ void Cloth::buildGrid() {
 
   // POPULATE GRID WITH MASSES
   // =======================================================
+
   float min_i = 0;
   float min_j = 0;
   float max_i = width;
   float max_j = height;
   float delta_i = (max_i - min_i)/num_width_points;
   float delta_j = (max_j - min_j)/num_height_points;
+
+  float radius = 0.2;
 
   for (int j = 0; j < num_height_points; j++) {
     for (int i = 0; i < num_width_points; i++) {
@@ -70,12 +172,28 @@ void Cloth::buildGrid() {
       // the pinned vector stores the INDICES!! of pinned masses - not the positions!
       // if inside pinned vector, pinned = true!
       bool pin = false;
+      float r2 = pow(radius,2);
+      Vector3D center = Vector3D(0.5,1,0.5);
+    
+
+      float inside_circle = pow(position[0]-center.x, 2) + pow(position[2]-center.z, 2);
+
+      // perimeter of circle is pinned
+      if (abs(inside_circle - r2) < 0.01) {
+         cout << "pinned " << abs(inside_circle - r2) << endl;
+         cout << "pinned " << r2 << endl;
+         //getchar();
+         pin = true; 
+      }
+
+      /*
       for (vector<int> v : pinned) {
         if (v[0] == i && v[1] == j) {
           pin = true;
           continue;
         }
       }
+      */
 
       point_masses.push_back(PointMass(position, pin));
     }
