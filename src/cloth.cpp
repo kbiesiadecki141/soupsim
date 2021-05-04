@@ -141,12 +141,12 @@ void Cloth::buildGrid() {
 
   float min_i = 0;
   float min_j = 0;
-  float max_i = width;
-  float max_j = height;
+  float max_i = 1;
+  float max_j = 1;
   float delta_i = (max_i - min_i)/num_width_points;
   float delta_j = (max_j - min_j)/num_height_points;
 
-  float radius = 0.2;
+  float radius = 0.47;
 
   for (int j = 0; j < num_height_points; j++) {
     for (int i = 0; i < num_width_points; i++) {
@@ -185,15 +185,6 @@ void Cloth::buildGrid() {
          //getchar();
          pin = true; 
       }
-
-      /*
-      for (vector<int> v : pinned) {
-        if (v[0] == i && v[1] == j) {
-          pin = true;
-          continue;
-        }
-      }
-      */
 
       point_masses.push_back(PointMass(position, pin));
     }
@@ -282,7 +273,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   // FIXME combine loop with other parts
   for (auto &p : point_masses) {
     for (auto *co : *collision_objects) {
-      co->collide(p);
+      //co->collide(p);
     }
   }
 

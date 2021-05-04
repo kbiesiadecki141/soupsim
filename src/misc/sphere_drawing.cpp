@@ -93,7 +93,7 @@ void SphereMesh::build_data() {
   uvs = MatrixXf(2, sphere_num_indices * 3);
   tangents = MatrixXf(4, sphere_num_indices * 3);
 
-  for (int i = 0; i < sphere_num_indices; i += 3) {
+  for (int i = sphere_num_indices/2.5; i < sphere_num_indices; i += 3) {
     double *vPtr1 = &Vertices[VERTEX_SIZE * Indices[i]];
     double *vPtr2 = &Vertices[VERTEX_SIZE * Indices[i + 1]];
     double *vPtr3 = &Vertices[VERTEX_SIZE * Indices[i + 2]];
