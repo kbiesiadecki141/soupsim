@@ -330,6 +330,7 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
 
       Sphere *s = new Sphere(origin, radius, friction, sphere_num_lat, sphere_num_lon);
       objects->push_back(s);
+
     } else if (key == BOWL) {
       Vector3D origin;
       double radius, friction;
@@ -367,6 +368,7 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
       const char * fn = const_cast<char *>(fname.c_str());
       Obj *s = new Obj(origin, radius, friction, fn);
       objects->push_back(s);
+
     } else { // PLANE
       Vector3D point, normal;
       double friction;
