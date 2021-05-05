@@ -20,7 +20,7 @@
 #include "clothSimulator.h"
 #include "json.hpp"
 #include "misc/file_utils.h"
-#include "glm/glm.hpp"
+#include "../glm/glm.hpp"
 
 typedef uint32_t gid_t;
 
