@@ -21,6 +21,10 @@ void main() {
   vec4 spec = vec4(.5 * (u_light_intensity / (dot(l, l))) * pow(max(0, dot(normalize(v_normal.xyz), normalize(h))), 100), 1.0);
   vec4 ia = vec4(1.0, 1.0, 1.0, 1.0);
   vec4 ambient = .1 * ia;
+<<<<<<< HEAD
   out_color = spec;
+=======
+  out_color = spec + diffuse + ambient;
+>>>>>>> 2b2fdbf63f36c6cd3d45e46a836ad6da02408413
   out_color.a = 1.0;
 }
