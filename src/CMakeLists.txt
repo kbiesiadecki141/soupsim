@@ -9,6 +9,7 @@ set(CLOTHSIM_VIEWER_SOURCE
     # Collision objects
     collision/sphere.cpp
     collision/plane.cpp
+    collision/obj.cpp
 
     # Application
     main.cpp
@@ -17,6 +18,7 @@ set(CLOTHSIM_VIEWER_SOURCE
     # Miscellaneous
     # png.cpp
     misc/sphere_drawing.cpp
+    misc/obj_drawing.cpp
     misc/file_utils.cpp
 
     # Camera

@@ -1,7 +1,9 @@
-#ifndef CGL_UTIL_BLENDERDRAWING_H
-#define CGL_UTIL_BLENDERDRAWING_H
+#ifndef CGL_UTIL_OBJDRAWING_H
+#define CGL_UTIL_OBJDRAWING_H
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include <nanogui/nanogui.h>
 
@@ -15,29 +17,24 @@ namespace Misc {
 class ObjMesh {
 public:
   // File location for .obj 
-  ObjMesh(const char* filename);
-  
+  ObjMesh(char const* fname);
+
   /**
    * Draws a sphere with the given position and radius in opengl, using the
    * current modelview/projection matrices and color/material settings.
    */
   void draw_obj(GLShader &shader, const Vector3D &p, double r);
+  void loadOBJ(const char* filename);
 
 private:
-  std::vector<unsigned int> Indices;
-  std::vector<double> Vertices;
-  
-  int s_index(int x, int y);
-  
-  void build_data();
-  
-  int obj_num_vertices;
-  int obj_num_indices;
+  const char* filename;
   
   MatrixXf positions;
   MatrixXf normals;
   MatrixXf uvs;
   MatrixXf tangents;
+
+  int size = 0;
 };
 
 

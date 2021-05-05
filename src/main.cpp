@@ -15,6 +15,7 @@
 #include "CGL/CGL.h"
 #include "collision/plane.h"
 #include "collision/sphere.h"
+#include "collision/obj.h"
 #include "cloth.h"
 #include "clothSimulator.h"
 #include "json.hpp"
@@ -33,8 +34,9 @@ using json = nlohmann::json;
 const string SPHERE = "sphere";
 const string PLANE = "plane";
 const string CLOTH = "cloth";
+const string BOWL  = "bowl";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, CLOTH};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, CLOTH, BOWL};
 
 ClothSimulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -327,6 +329,43 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
       }
 
       Sphere *s = new Sphere(origin, radius, friction, sphere_num_lat, sphere_num_lon);
+      objects->push_back(s);
+    } else if (key == BOWL) {
+      Vector3D origin;
+      double radius, friction;
+      std::string fname;
+
+      auto it_origin = object.find("origin");
+      if (it_origin != object.end()) {
+        vector<double> vec_origin = *it_origin;
+        origin = Vector3D(vec_origin[0], vec_origin[1], vec_origin[2]);
+      } else {
+        incompleteObjectError("sphere", "origin");
+      }
+
+      auto it_radius = object.find("radius");
+      if (it_radius != object.end()) {
+        radius = *it_radius;
+      } else {
+        incompleteObjectError("sphere", "radius");
+      }
+
+      auto it_friction = object.find("friction");
+      if (it_friction != object.end()) {
+        friction = *it_friction;
+      } else {
+        incompleteObjectError("sphere", "friction");
+      }
+
+      auto it_filename = object.find("filename");
+      if (it_filename != object.end()) {
+        fname = *it_filename;
+      } else {
+        incompleteObjectError("sphere", "filename");
+      }
+
+      const char * fn = const_cast<char *>(fname.c_str());
+      Obj *s = new Obj(origin, radius, friction, fn);
       objects->push_back(s);
     } else { // PLANE
       Vector3D point, normal;
