@@ -19,8 +19,8 @@ Cloth::Cloth(double width, double height, int num_width_points,
   this->num_height_points = num_height_points;
   this->thickness = thickness;
 
-  //buildGrid();
-  buildCircle();
+  buildGrid();
+  //buildCircle();
   buildClothMesh();
 }
 
@@ -53,7 +53,6 @@ void Cloth::buildCircle() {
   Vector3D center = Vector3D(0,1,0);
   float radius = 0.5*width;
 
-  printf("safe entry");
   getchar();
   for (int j = 0; j < num_height_points; j++) {
     for (int i = 0; i < num_width_points; i++) {
@@ -180,8 +179,6 @@ void Cloth::buildGrid() {
 
       // perimeter of circle is pinned
       if (abs(inside_circle - r2) < 0.01) {
-         cout << "pinned " << abs(inside_circle - r2) << endl;
-         cout << "pinned " << r2 << endl;
          //getchar();
          pin = true; 
       }

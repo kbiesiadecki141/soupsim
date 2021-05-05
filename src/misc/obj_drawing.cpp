@@ -23,6 +23,11 @@ ObjMesh::ObjMesh(char const* fname) : filename(fname) {
   loadOBJ(filename);
 }
 
+/*
+ * Credit to this Youtube video: 
+ *   https://www.youtube.com/watch?v=S2-w9NmH6pw&ab_channel=SurajSharma 
+ * for object loading code
+ */
 void ObjMesh::loadOBJ(const char* filename) {
   // Vertex portions
   std::vector<glm::fvec3> vertex_positions;
@@ -56,10 +61,11 @@ void ObjMesh::loadOBJ(const char* filename) {
     ss >> prefix;
 
     if (prefix == "#") {
-
+      // do nothing (comment)
     } else if (prefix == "o") {
     } else if (prefix == "s") {
     } else if (prefix == "use_mtl") {
+      // import material properties from .mtl
     } else if (prefix == "f") { // faces
       int counter = 0;
       while (ss >> temp_glint) {
@@ -142,14 +148,15 @@ void ObjMesh::draw_obj(GLShader &shader, const Vector3D &p, double r) {
     shader.uploadAttrib("in_uv", uvs);
   }
   
-  // tengents?
+  // tangents?
   /*
   if (shader.attrib("in_tangent", false) != -1) {
     shader.uploadAttrib("in_tangent", tangents, false);
   }
   */
 
-  shader.drawArray(GL_TRIANGLES, 0, size);
+  
+  shader.drawArray(GL_TRIANGLES, 0, size*3);
 }
 
 } // namespace Misc

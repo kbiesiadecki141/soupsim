@@ -1,7 +1,8 @@
 {
- "bowl": {
+
+   "bowl": {
    "origin": [0.5, 0, 0.5],
-   "radius": 0.57,
+   "radius": 0.1,
    "friction": 0.3,
    "filename": "../objs/bowl.obj"
   },
