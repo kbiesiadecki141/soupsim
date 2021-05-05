@@ -5,9 +5,9 @@
 uniform mat4 u_model;
 uniform mat4 u_view_projection;
 
-// In a vertex shader, the "in" variables are read-only per-vertex 
-// properties. An example of this was shown in the rasterizer project, 
-// where each vertex had an associated "color" or "uv" value which we 
+// In a vertex shader, the "in" variables are read-only per-vertex
+// properties. An example of this was shown in the rasterizer project,
+// where each vertex had an associated "color" or "uv" value which we
 // would later interpolate using barycentric coordinates.
 in vec4 in_position;
 in vec4 in_normal;
@@ -17,7 +17,7 @@ in vec2 in_uv;
 // In a vertex shader, the "out" variables are per-vertex properties
 // that are read/write. These properties allow us to communicate
 // information from the vertex shader to the fragment shader.
-// That is, in the linked fragment shader, these values become the 
+// That is, in the linked fragment shader, these values become the
 // "in" variables.
 out vec4 v_position;
 out vec4 v_normal;
@@ -37,7 +37,7 @@ void main() {
   v_normal = normalize(u_model * in_normal);
   v_uv = in_uv;
   v_tangent = normalize(u_model * in_tangent);
-  
+
   // The final screen-space location of this vertex which the
   // GPU's triangle rasterizer takes in.
   gl_Position = u_view_projection * u_model * in_position;
