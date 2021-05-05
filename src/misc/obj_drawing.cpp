@@ -2,7 +2,7 @@
 #include <nanogui/nanogui.h>
 
 #include "obj_drawing.h"
-#include <glm/glm.hpp>
+#include <../../glm/glm.hpp>
 
 #include "CGL/color.h"
 #include "CGL/vector3D.h"
