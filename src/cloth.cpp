@@ -203,6 +203,11 @@ void Cloth::buildGrid() {
   // =======================================================
   for (int y = 0; y < num_height_points; y++) {
     for (int x = 0; x < num_width_points; x++) {
+        // sometimes, don't populate with a spring to get clumps in the soup
+        if (rand() % 10 == 1) {
+            continue;
+        }
+
       // is this actually the easier way?
       PointMass * pm = &point_masses[y * num_width_points + x];
 
