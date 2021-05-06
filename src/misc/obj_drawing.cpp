@@ -69,6 +69,7 @@ void ObjMesh::loadOBJ(const char* filename) {
     } else if (prefix == "f") { // faces
       int counter = 0;
       while (ss >> temp_glint) {
+
         if (counter == 0) {
           vertex_position_indices.push_back(temp_glint);
         } else if (counter == 1) {
@@ -82,7 +83,7 @@ void ObjMesh::loadOBJ(const char* filename) {
           ++counter;
           ss.ignore(1, '/');
         } else if (ss.peek() == ' ') {
-          ++counter;
+          ++counter; 
           ss.ignore(1, ' ');
         }
 
@@ -133,8 +134,16 @@ void ObjMesh::loadOBJ(const char* filename) {
 
 void ObjMesh::draw_obj(GLShader &shader, const Vector3D &p, double r) {
 
+  float x = -PI/2;
+
+  // Here, I have hardcoded a rotation about the x axis by x radians.
+  // There is surely a way to do this using the Eigen library,
+  // but I'm under a time crunch, ok?
   Matrix4f model;
-  model << r, 0, 0, p.x, 0, r, 0, p.y, 0, 0, r, p.z, 0, 0, 0, 1;
+  model << r, 0, 0, p.x, 
+           0, r*cos(x), -r*sin(x), p.y, 
+           0, r*sin(x), r*cos(x), p.z, 
+           0, 0, 0, 1;
 
   shader.setUniform("u_model", model);
 
@@ -153,9 +162,8 @@ void ObjMesh::draw_obj(GLShader &shader, const Vector3D &p, double r) {
     shader.uploadAttrib("in_tangent", tangents, false);
   }
   */
-
   
-  shader.drawArray(GL_TRIANGLES, 0, size*3);
+  shader.drawArray(GL_TRIANGLES, 0, size);
 }
 
 } // namespace Misc
