@@ -2,7 +2,7 @@
 #include <nanogui/nanogui.h>
 
 #include "obj_drawing.h"
-#include <glm/glm.hpp>
+#include <../../glm/glm.hpp>
 
 #include "CGL/color.h"
 #include "CGL/vector3D.h"
@@ -80,7 +80,6 @@ void ObjMesh::loadOBJ(const char* filename) {
         // handling characters
         if (ss.peek() == '/') {
           ++counter;
-
           ss.ignore(1, '/');
         } else if (ss.peek() == ' ') {
           ++counter;
@@ -105,9 +104,9 @@ void ObjMesh::loadOBJ(const char* filename) {
     }
 
     // build mesh
-    positions = MatrixXf(4, vertex_position_indices.size() * 3);
-    normals = MatrixXf(4, vertex_position_indices.size() * 3);
-    uvs = MatrixXf(2, vertex_position_indices.size() * 3);
+    positions = MatrixXf(4, vertex_position_indices.size());
+    normals = MatrixXf(4, vertex_position_indices.size());
+    uvs = MatrixXf(2, vertex_position_indices.size());
     //tangents = MatrixXf(4, sphere_num_indices * 3);
 
     for (size_t i = 0; i < vertex_position_indices.size(); i++) {
@@ -124,7 +123,7 @@ void ObjMesh::loadOBJ(const char* filename) {
     }
 
     // debug
-    std::cout << line << "\n";
+    //std::cout << line << "\n";
   }
 
   size = vertex_position_indices.size();

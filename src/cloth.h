@@ -77,6 +77,8 @@ struct Cloth {
 
   // Spatial hashing
   unordered_map<float, vector<PointMass *> *> map;
+
+    bool isCorner(int i, int j, int num_height_points, int num_width_points);
 };
 
 #endif /* CLOTH_H */
