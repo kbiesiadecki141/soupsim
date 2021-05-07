@@ -130,6 +130,14 @@ void Cloth::buildCircle() {
   return;
 }
 
+bool Cloth::isCorner(int i, int j, int num_height_points, int num_width_points) {
+    return (i == 0 and j == 0) \
+        or (i == num_width_points - 1 and j == 0) \
+        or (i == 0 and j == 0) \
+        or (i == 0 and j == num_height_points - 1) \
+        or (num_width_points - 1 and j == num_height_points - 1);
+}
+
 void Cloth::buildGrid() {
   // TODO (Part 1): Build a grid of masses and springs.
   // Evenly-spaced grid over (0,0):(width, height)
@@ -152,8 +160,12 @@ void Cloth::buildGrid() {
       Vector3D position;
       if (orientation == HORIZONTAL) {
         // set y coordinate to 1 for all point masses while varying x,z
-        position[0] = i*delta_i;
-        position[1] = 1;
+      position[0] = i*delta_i;
+      if (isCorner(i, j, num_height_points, num_width_points)) {
+          position[1] = 0.9;
+      } else {
+          position[1] = 1;
+      }
         position[2] = j*delta_j;
       } else { // == VERTICAL
         position[0] = i*delta_i;
@@ -177,8 +189,8 @@ void Cloth::buildGrid() {
 
       float inside_circle = pow(position[0]-center.x, 2) + pow(position[2]-center.z, 2);
 
-      // perimeter of circle is pinned
-      if (abs(inside_circle - r2) < 0.01) {
+      // perimeter of circle and four corners are pinned
+      if (abs(inside_circle - r2) < 0.01 or isCorner(i, j, num_height_points, num_width_points)) {
          //getchar();
          pin = true; 
       }
@@ -191,6 +203,11 @@ void Cloth::buildGrid() {
   // =======================================================
   for (int y = 0; y < num_height_points; y++) {
     for (int x = 0; x < num_width_points; x++) {
+        // sometimes, don't populate with a spring to get clumps in the soup
+        if (rand() % 10 == 1) {
+            continue;
+        }
+
       // is this actually the easier way?
       PointMass * pm = &point_masses[y * num_width_points + x];
 
