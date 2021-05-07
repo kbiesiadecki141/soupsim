@@ -32,3 +32,7 @@ void Sphere::render(GLShader &shader) {
   // and intersect with the sphere when rendered
   m_sphere_mesh.draw_sphere(shader, origin, radius * 0.92);
 }
+
+int Sphere::get_id() {
+  return 3;
+}
