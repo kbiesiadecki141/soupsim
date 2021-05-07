@@ -14,6 +14,8 @@ public:
   virtual void render(GLShader &shader) = 0;
   virtual void collide(PointMass &pm) = 0;
 
+  virtual int get_id() = 0;
+
 private:
   double friction;
 };

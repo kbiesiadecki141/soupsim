@@ -16,3 +16,7 @@ void Obj::render(GLShader &shader) {
   // and intersect with the obj when rendered
   m_obj_mesh.draw_obj(shader, origin, radius * 0.92);
 }
+
+int Obj::get_id() {
+  return 1;
+}

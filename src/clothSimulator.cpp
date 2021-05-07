@@ -10,6 +10,7 @@
 #include "cloth.h"
 #include "collision/plane.h"
 #include "collision/sphere.h"
+#include "collision/obj.h"
 #include "misc/camera_info.h"
 #include "misc/file_utils.h"
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
@@ -18,6 +19,8 @@
 
 using namespace nanogui;
 using namespace std;
+
+GLuint texture[2];
 
 Vector3D load_texture(int frame_idx, GLuint handle, const char* where) {
   Vector3D size_retval;
@@ -71,7 +74,7 @@ void ClothSimulator::load_textures() {
   glGenTextures(1, &m_gl_cubemap_tex);
 
   m_gl_texture_1_size = load_texture(1, m_gl_texture_1, (m_project_root + "/textures/texture_1.png").c_str());
-  m_gl_texture_2_size = load_texture(2, m_gl_texture_2, (m_project_root + "/textures/texture_2.png").c_str());
+  m_gl_texture_2_size = load_texture(2, m_gl_texture_2, (m_project_root + "/textures/soup_yellow.jpeg").c_str());
   m_gl_texture_3_size = load_texture(3, m_gl_texture_3, (m_project_root + "/textures/texture_3.png").c_str());
   m_gl_texture_4_size = load_texture(4, m_gl_texture_4, (m_project_root + "/textures/texture_4.png").c_str());
 
@@ -250,9 +253,7 @@ void ClothSimulator::drawContents() {
   }
 
   // Bind the active shader
-
   const UserShader& active_shader = shaders[active_shader_idx];
-
   GLShader &shader = *active_shader.nanogui_shader;
   shader.bind();
 
@@ -304,7 +305,20 @@ void ClothSimulator::drawContents() {
   }
 
   for (CollisionObject *co : *collision_objects) {
-    co->render(shader);
+    // TODO: Make this a string instead of unreadable int
+    if (co->get_id() == 1) { // Bowl Object
+      glBindTexture(GL_TEXTURE_2D, m_gl_texture_4);
+      glUniform1i(4, 0);
+
+      co->render(shader);
+
+    } else {
+      // sphere
+      glBindTexture(GL_TEXTURE_2D, m_gl_texture_4);
+      glUniform1i(2, 0);
+
+      co->render(shader);
+    }
   }
 }
 
