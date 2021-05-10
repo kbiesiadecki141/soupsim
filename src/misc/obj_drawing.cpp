@@ -53,6 +53,8 @@ void ObjMesh::loadOBJ(const char* filename) {
     throw "ERROR: Can't open file.";
   }
 
+  int num_faces = 0;
+
   // read one line at a time
   while (std::getline(in_file, line)) {
     // get the prefix of the line
@@ -67,6 +69,7 @@ void ObjMesh::loadOBJ(const char* filename) {
     } else if (prefix == "use_mtl") {
       // import material properties from .mtl
     } else if (prefix == "f") { // faces
+        num_faces++;
       int counter = 0;
       while (ss >> temp_glint) {
 
@@ -92,6 +95,7 @@ void ObjMesh::loadOBJ(const char* filename) {
           counter = 0;
         }
       }
+
     } else if (prefix == "v") { // vertex position
       ss >> temp_vec3.x >> temp_vec3.y >> temp_vec3.z;
       vertex_positions.push_back(temp_vec3);
@@ -104,6 +108,12 @@ void ObjMesh::loadOBJ(const char* filename) {
     } else {
     }
 
+    // debug
+    //std::cout << line << "\n";
+  }
+
+        std::cout << num_faces << std::endl;
+
     // build mesh
     positions = MatrixXf(4, vertex_position_indices.size());
     normals = MatrixXf(4, vertex_position_indices.size());
@@ -111,21 +121,17 @@ void ObjMesh::loadOBJ(const char* filename) {
     //tangents = MatrixXf(4, sphere_num_indices * 3);
 
     for (size_t i = 0; i < vertex_position_indices.size(); i++) {
-      glm::vec3 pos = vertex_positions[vertex_position_indices[i]-1];
-      positions.col(i) << pos.x, pos.y, pos.z, 1.0;
+        glm::vec3 pos = vertex_positions[vertex_position_indices[i]-1];
+        positions.col(i) << pos.x, pos.y, pos.z, 1.0;
 
-      glm::vec2 uv = vertex_texcoords[vertex_texcoord_indices[i]-1];
-      uvs.col(i) << uv.x, uv.y;
-      
-      glm::vec3 nor = vertex_normals[vertex_normal_indices[i]-1]; 
-      normals.col(i) << nor.x, nor.y, nor.z, 0.0;
+        glm::vec2 uv = vertex_texcoords[vertex_texcoord_indices[i]-1];
+        uvs.col(i) << uv.x, uv.y;
 
-      // color = glm::vec3(1.f, 1.f, 1.f);
+        glm::vec3 nor = vertex_normals[vertex_normal_indices[i]-1];
+        normals.col(i) << nor.x, nor.y, nor.z, 0.0;
+
+        // color = glm::vec3(1.f, 1.f, 1.f);
     }
-
-    // debug
-    //std::cout << line << "\n";
-  }
 
   size = vertex_position_indices.size();
   std::cout << "OBJ file loaded!" << "\n";
@@ -163,7 +169,7 @@ void ObjMesh::draw_obj(GLShader &shader, const Vector3D &p, double r) {
   }
   */
   
-  shader.drawArray(GL_TRIANGLES, 0, size);
+  shader.drawArray(GL_TRIANGLES, 0, size * 6);
 }
 
 } // namespace Misc
