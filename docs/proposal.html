@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>CS 184 Final Project</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark" style="height:65px;">
+  <ul class="navbar-nav mr-auto flex-row">
+  	<li> <a class="nav-link" href="index.html" style="font-size:125%;">Home</a>  </li>
+  	<li> <a class="nav-link" href="milestone.html" style="font-size:125%;">Milestone</a></li>
+    <li> <a class="nav-link" href="finalReport.html" style="font-size:125%;">Final Report</a></li>
+  </ul>
+</nav>
+
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2021</h1>
+<h1 align="middle">Final Project: SoupSim</h1>
+<h2 align="middle">Katelyn Biesiadecki, Amy Liu, Joshua Yang, Thomas Glezen</h2>
+
+<br><br>
+
+<hr>
+<h2 align="middle">Summary</h2>
+<p>SoupSim simulates the physical properties of soup, including viscosity, textures, and clumps of various ingredients within the soup.
+  With SoupSim, users can tinker with various soupy parameters to construct their ideal soup and interact with it however they like within a virtual environment.
+  SoupSim represents a small but important step toward the metaverse that we are building as virtual dreamers of the future.</p>
+<hr>
+<h2 align="middle">Problem Description</h2>
+<p>In many video games and animations, soup is generally just a colored liquid.
+  Oftentimes, gamers and audiences may find this unappetizing and a sneaky but potent reminder that virtual worlds are indeed not real.
+  Even when soup is carefully crafted by animators, they have to painstakingly animate individual clumps in the soup and keyframe various aspects of the soup that could make the process very tedious.
+  Thus, with SoupSim, we hope to build a fluid simulator with customizable viscosity and the option of extra components within the fluids to amplify the quality, realism, and accessibility of top quality soup in virtual worlds within video games, animated films, commercials, and more.
+  SoupSim can also be generalized to other liquids (with clumps) such as blood, mud, and other liquids.</p>
+<div align="middle">
+  <img src="images/tofuSoup.png" alt="tofu soup" width="400">
+</div>
+
+<hr>
+<h2 align="middle">Goals and Deliverables</h2>
+<ul>
+  <li>Important things that we are trying to accomplish
+    <ul>
+      <li>Bowl rendering</li>
+      <li>Low viscosity, e.g. water:</li>
+      <img src="images/water.png" alt="Water in cup">
+      <li>Medium viscosity + solid ingredients + color variation, e.g. corn chowder</li>
+      <img src="images/clamChowder.png" alt="clam chowder" width="400">
+    </ul>
+  </li>
+  <li>Images that we will include
+    <ul>
+      <li><a href="https://www.youtube.com/watch?v=BIjj3Qcmbf4">Youtube reference video</a></li>
+      <li>We aim to create an interface like this: <a href="https://aatishb.com/drape">Drape clothe simulator</a></li>
+      <li>This interface will allow you to adjust parameters easily, although depending on rendering times, this may not be the best solution</li>
+    </ul>
+  </li>
+  <li>Define how you will measure the quality / performance of your system
+    <ul>
+      <li>We don’t yet have a clear metric, but our plan is to do visual comparisons with real world liquids to assess the accuracy of our simulator.</li>
+    </ul>
+  </li>
+  <li>What questions do we plan to answer with our anaysis
+    <ul>
+      <li>Render Time</li>
+      <li>Accuracy of particle interactions when compared to real life fluids </li>
+      <li>idk Thomas bro help</li>
+    </ul>
+  </li>
+</ul>
+
+
+<hr>
+<h2 align="middle">Schedule</h2>
+<ul>
+  <li>Week 1: Setup/research and interface
+    <ul>
+      <li>Research existing fluid simulation platforms and libraries</li>
+      <li>Import as much existing project code into interface</li>
+    </ul>
+  </li>
+  <li>Week 2: Bowl and liquid interactions
+    <ul>
+      <li>Simulate bowl</li>
+      <li>Simulate low viscosity liquid</li>
+      <li>Liquids splashing against the sides of bowl</li>
+    </ul>
+  </li>
+  <li>Week 3/4: Viscosity
+    <ul>
+      <li>Create interface that allows for adjusting viscosities</li>
+      <li>Possibly incorporate clumping for higher viscosities</li>
+    </ul>
+  </li>
+</ul>
+
+
+
+<p></p>
+
+<hr>
+<h2 align="middle">Resources</h2>
+<ul>
+  <li>We hope to use <a href="https://www.sciencedirect.com/science/article/abs/pii/S009784931">project 4</a> as our starter code, as cloth simulation will be similar to the particle simulations we want to do for fluids</li>
+  <li>https://cs184.eecs.berkeley.edu/sp21/docs/proj4</li>
+  <li>We also want to utilize this <a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849314000612">paper to adopt thermal conduction simulation as well as viscosity simulation</a></li>
+  <li>If we try some of our stretch goals, one such goal would be to put objects in the soup, such as potato, beans, or corn. We were thinking of using this <a href=https://courses.lumenlearning.com/physics/chapter/12-6-motion-of-an-object-in-a-viscous-fluid/>paper</a> to help us with that</li>
+</ul>
+
+
+</body>
+</html>

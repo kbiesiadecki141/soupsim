@@ -14,101 +14,100 @@
   <ul class="navbar-nav mr-auto flex-row">
   	<li> <a class="nav-link" href="index.html" style="font-size:125%;">Home</a>  </li>
   	<li> <a class="nav-link" href="milestone.html" style="font-size:125%;">Milestone</a></li>
+    <li> <a class="nav-link" href="finalReport.html" style="font-size:125%;">Final Report</a></li>
   </ul>
 </nav>
 
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2021</h1>
 <h1 align="middle">Final Project: SoupSim</h1>
-<h2 align="middle">Thomas Glezen, Amy Liu, Joshua Yang, Katelyn Biesiadecki</h2>
+<h2 align="middle">Katelyn Biesiadecki, Amy Liu, Joshua Yang, Thomas Glezen</h2>
 
 <br><br>
 
 <hr>
-<h2 align="middle">Summary</h2>
-<p>SoupSim simulates the physical properties of soup, including viscosity, textures, and clumps of various ingredients within the soup.
-  With SoupSim, users can tinker with various soupy parameters to construct their ideal soup and interact with it however they like within a virtual environment.
-  SoupSim represents a small but important step toward the metaverse that we are building as virtual dreamers of the future.</p>
-<hr>
-<h2 align="middle">Problem Description</h2>
-<p>In many video games and animations, soup is generally just a colored liquid.
-  Oftentimes, gamers and audiences may find this unappetizing and a sneaky but potent reminder that virtual worlds are indeed not real.
-  Even when soup is carefully crafted by animators, they have to painstakingly animate individual clumps in the soup and keyframe various aspects of the soup that could make the process very tedious.
-  Thus, with SoupSim, we hope to build a fluid simulator with customizable viscosity and the option of extra components within the fluids to amplify the quality, realism, and accessibility of top quality soup in virtual worlds within video games, animated films, commercials, and more.
-  SoupSim can also be generalized to other liquids (with clumps) such as blood, mud, and other liquids.</p>
-<div align="middle">
-  <img src="images/tofuSoup.png" alt="tofu soup" width="400">
-</div>
+<h2 align="middle">Abstract</h2>
+<p>Soupsim aims to create a photorealistic rendering of soup in an efficient manner. In this project, we use a point mass and spring model in order to replicate soup movement within its container. We aim to obtain a ‘moving’ soup that is computationally cheaper than particle simulation yet more realistic than a still object. This is achieved by avoiding particle simulation all together by instead using a cloth in order to replicate the surface of the soup. By pinning the cloth around the edges of the bowl and manipulating other factors, such as damping, texturing, and spring placement, we are able to create a ‘moving’ replication of soup. </p>
 
 <hr>
-<h2 align="middle">Goals and Deliverables</h2>
-<ul>
-  <li>Important things that we are trying to accomplish
-    <ul>
-      <li>Bowl rendering</li>
-      <li>Low viscosity, e.g. water:</li>
-      <img src="images/water.png" alt="Water in cup">
-      <li>Medium viscosity + solid ingredients + color variation, e.g. corn chowder</li>
-      <img src="images/clamChowder.png" alt="clam chowder" width="400">
-    </ul>
-  </li>
-  <li>Images that we will include
-    <ul>
-      <li><a href="https://www.youtube.com/watch?v=BIjj3Qcmbf4">Youtube reference video</a></li>
-      <li>We aim to create an interface like this: <a href="https://aatishb.com/drape">Drape clothe simulator</a></li>
-      <li>This interface will allow you to adjust parameters easily, although depending on rendering times, this may not be the best solution</li>
-    </ul>
-  </li>
-  <li>Define how you will measure the quality / performance of your system
-    <ul>
-      <li>We don’t yet have a clear metric, but our plan is to do visual comparisons with real world liquids to assess the accuracy of our simulator.</li>
-    </ul>
-  </li>
-  <li>What questions do we plan to answer with our anaysis
-    <ul>
-      <li>Render Time</li>
-      <li>Accuracy of particle interactions when compared to real life fluids </li>
-      <li>idk Thomas bro help</li>
-    </ul>
-  </li>
-</ul>
-
+<h2 align="middle">Abstract</h2>
 
 <hr>
-<h2 align="middle">Schedule</h2>
-<ul>
-  <li>Week 1: Setup/research and interface
-    <ul>
-      <li>Research existing fluid simulation platforms and libraries</li>
-      <li>Import as much existing project code into interface</li>
-    </ul>
-  </li>
-  <li>Week 2: Bowl and liquid interactions
-    <ul>
-      <li>Simulate bowl</li>
-      <li>Simulate low viscosity liquid</li>
-      <li>Liquids splashing against the sides of bowl</li>
-    </ul>
-  </li>
-  <li>Week 3/4: Viscosity
-    <ul>
-      <li>Create interface that allows for adjusting viscosities</li>
-      <li>Possibly incorporate clumping for higher viscosities</li>
-    </ul>
-  </li>
-</ul>
+<h2 align="middle">Technical approach</h2>
+  <h3 align="middle">Overview</h3>
+    <p>To implement SoupSim, we first explored simulating soup using particle simulation via the Navier-Stokes equations. However, upon further rationalization, we determined that capturing the flow of soup was less important to us than emulating the soup in a resting state, as we knew that there would be a lot of work to be done to turn a liquid-like structure into a soup, and believed that this process would be what would set apart our project from other liquid simulators. Furthermore, particle simulation would likely be much more computationally intensive, as we saw that renders of previous fluid simulator projects would take students hours on end. Hence, we pivoted from a particle-based model to a cloth-based implementation, by simulating the bubbling surface of the soup inside of a bowl. To accomplish this, we started with our project four cloth simulator code, and adapted and added features to it.</p>
 
 
+  <h3 align="middle">Pinning the cloth to a bowl</h3>
+    <p>First, we needed to make sure the soup would stay in place when the simulation began. Simply pinning the four corners of the cloth was not enough, as the other point masses in the perimeter of the square-shaped cloth would not behave in a soup-like manner, dangling across the bowl and such. Hence, we wrote an algorithm that pinned point masses that were a small distance away from the outer circle of the bowl, such that point masses along a circle outlining the bowl’s edge were all pinned, making sure the soup stays in the bowl.</p>
 
-<p></p>
+    <p>Initially, our obj file importer seemed to be very buggy, as triangles on our bowl mesh seemed to be missing, and other triangles seemed to connect the wrong vertices. After doing some detective work, we found out that our obj files contained faces that were quads, and we were processing them as if they were triangles. From here on out, we tried to use GL_QUADS instead of GL_TRIANGLES to render our object, but it disappeared, so we shifted to using a regex command to edit the obj file such that each quad was converted to two triangles. After doing that and importing in our newly generated obj file, we rendered the bowl correctly.</p>
+
+  <h3 align="middle">Adding textures</h3>
+    <p>An important part of photorealistic soup renderings is texturing. In order to get a texture on our cloth mesh, we added additional functionality to use the texture.frag shader on the cloth. Most of our base code for texturing was imported from the project 4 source code. After uploading our own pictures for the textures, our biggest challenge was applying separate textures to each model. We mostly referenced this link and first assigned separate IDs to each model. Using these IDs, we were able to determine which model needed which texture and bind accordingly. As a result, we were able to use texture shading to get a more realistic look of the soup and the bowl.</p>
+
+  <h3 align="middle">importing OBJ files</h3>
+    <p>As we really wanted to get a bowl object in our scene to simulate the soup environment, we made use of CLM, a library that helped us import obj files into our scene. To import our bowl, we wrote an algorithm that reads through an obj file line by line, starting with adding vertices, vertex normals, and uv coordinates to respective lists. Then, to process the faces of the obj file, for each face, we read the indices of which vertex, vertex normal, and uv coordinate to use from our list, and column concatenated positions, normals, and uv coordinates matrices with the values of these attributes, face by face. Finally, we passed the matrices into OpenGL to render our triangles.</p>
+
+    <p>Initially, our obj file importer seemed to be very buggy, as triangles on our bowl mesh seemed to be missing, and other triangles seemed to connect the wrong vertices. After doing some detective work, we found out that our obj files contained faces that were quads, and we were processing them as if they were triangles. From here on out, we tried to use GL_QUADS instead of GL_TRIANGLES to render our object, but it disappeared, so we shifted to using a regex command to edit the obj file such that each quad was converted to two triangles. After doing that and importing in our newly generated obj file, we rendered the bowl correctly.</p>
+
+  <h3 align="middle">Simulating soup movement</h3>
+    <p>Initially, we researched various ways to simulate soup moving within a bowl. We then realized that after starting our simulation, when the middle of the cloth falls, a water rippling effect can be seen given we’ve pinned a circular array of point masses. From this point on, we turned the damping hyperparameter of our soup to 0, and found that we could achieve a decent simulation of moving/boiling soup just by tweaking some settings.</p>
+
+  <h3 align="middle">Simulating bubbles</h3>
+    <p>As soup tends to have bubbles and clumps, we wanted to additionally add some irregularities to our soup simulation. We explored various ideas, and landed on a simple yet elegant solution to generate “noise” in our soup: randomly chose springs to not add to our cloth. By randomly choosing to not add springs that would connect point masses to each other, whether that’d be shearing, structural, or bending springs, we were able to generate various shapes and sizes of “sags” in our soup that made it seem like it was bubbling. The result can be clearly seen when using normal shading, but as texture shading doesn’t introduce shadows, we were not able to have these bubbles show up with textures.</p>
+
+  <h3 align="middle">Lessons Learned</h3>
+    <p>From building out our soup simulation, we learned that various small tweaks in the physical structure of our simulated materials can cause interesting and unexpected changes and effects. We went into this project with clear expectations and ideas of how to potentially build out our simulation only to pivot our ideas many times as experimentation and tweaking settings helped us realize just how many interesting behaviours we could simulate. We also learned that linking libraries together can be a pain, especially when the program being used doesn’t have a clear pipeline for importing third party packages. Next time, we would budget extra time to import libraries such as GLM. Lastly, we learned that refactoring code is a nontrivial task that involves more time than we thought as well. After adapting the project 4 code to run our soup simulation, multiple team members ran into build errors, and that slowed our progress down a lot. Even though we copied a lot of the same structure that was existent in the project 4 code, we didn’t think to update our CMakeLists, and also had some naming and other linking issues that slowed us down. Overall, we were introduced to a project that had very little hand-holding, and really appreciated the lessons we’ve learned along the way.</p>
 
 <hr>
-<h2 align="middle">Resources</h2>
-<ul>
-  <li>We hope to use <a href="https://www.sciencedirect.com/science/article/abs/pii/S009784931">project 4</a> as our starter code, as cloth simulation will be similar to the particle simulations we want to do for fluids</li>
-  <li>https://cs184.eecs.berkeley.edu/sp21/docs/proj4</li>
-  <li>We also want to utilize this <a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849314000612">paper to adopt thermal conduction simulation as well as viscosity simulation</a></li>
-  <li>If we try some of our stretch goals, one such goal would be to put objects in the soup, such as potato, beans, or corn. We were thinking of using this <a href=https://courses.lumenlearning.com/physics/chapter/12-6-motion-of-an-object-in-a-viscous-fluid/>paper</a> to help us with that</li>
+<h2 align="middle">Results</h2>
+
+<hr>
+<h2 align="middle">References</h2>
+  <ul>
+    <li><a href="https://youtu.be/IojkKlmwnOE">Inspiration Video</a></li>
+    <li>Physics Research
+      <ul>
+        <li><a href="https://www.fxguide.com/fxfeatured/the-science-of-fluid-sims/#:~:text=SPH%20is%20a%20particle%20system,particles%20to%20produce%20the%20waves">Fluid simulation research</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics#Hydrodynamics">Smoothed particle hydrodynamics</a></li>
+        <li><a href="https://matthias-research.github.io/pages/publications/sca03.pdf">Interactive particle based simulations</a></li>
+        <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849314000612">Fast simulation of fluids using position</a></li>
+        <li><a href="https://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid-EulerParticle.pdf">Using grids in order to optimize rendering runtime</a></li>
+        <li><a href="http://graphics.berkeley.edu/papers/Goktekin-AMF-2004-08/Goktekin-AMF-2004-08.pdf">Animating Viscoelastic Fluids</a></li>
+      </ul>
+    </li>
+    <li><a href="https://stackoverflow.com/questions/30034237/texturing-multiple-objects-with-different-textures">Stackoverflow reference</a></li>
+    <li><a href="https://github.com/cal-cs184-student/p4-clothsim-sp21-food-for-thots">Source Code</a></li>
+  </ul>
+
+<hr>
+<h2 align="middle">Contributions from each team member</h2>
+<ul> Contributions
+  <li>Katelyn Biesiadecki
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+
+  <li>Amy Liu
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+
+  <li>Joshua Yang
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+
+  <li>Thomas Glezen
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+
 </ul>
 
 
