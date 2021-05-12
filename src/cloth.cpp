@@ -131,11 +131,11 @@ void Cloth::buildCircle() {
 }
 
 bool Cloth::isCorner(int i, int j, int num_height_points, int num_width_points) {
+    return false;
     return (i == 0 and j == 0) \
         or (i == num_width_points - 1 and j == 0) \
-        or (i == 0 and j == 0) \
         or (i == 0 and j == num_height_points - 1) \
-        or (num_width_points - 1 and j == num_height_points - 1);
+        or (i == num_width_points - 1 and j == num_height_points - 1);
 }
 
 void Cloth::buildGrid() {
