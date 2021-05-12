@@ -73,10 +73,10 @@ void ClothSimulator::load_textures() {
   glGenTextures(1, &m_gl_texture_4);
   glGenTextures(1, &m_gl_cubemap_tex);
 
-  m_gl_texture_1_size = load_texture(1, m_gl_texture_1, (m_project_root + "/textures/texture_1.png").c_str());
+  m_gl_texture_1_size = load_texture(1, m_gl_texture_1, (m_project_root + "/textures/soup_yellow.jpeg").c_str());
   m_gl_texture_2_size = load_texture(2, m_gl_texture_2, (m_project_root + "/textures/soup_yellow.jpeg").c_str());
   m_gl_texture_3_size = load_texture(3, m_gl_texture_3, (m_project_root + "/textures/texture_3.png").c_str());
-  m_gl_texture_4_size = load_texture(4, m_gl_texture_4, (m_project_root + "/textures/texture_4.png").c_str());
+  m_gl_texture_4_size = load_texture(4, m_gl_texture_4, (m_project_root + "/textures/ceramic.jpeg").c_str());
 
   std::cout << "Texture 1 loaded with size: " << m_gl_texture_1_size << std::endl;
   std::cout << "Texture 2 loaded with size: " << m_gl_texture_2_size << std::endl;
