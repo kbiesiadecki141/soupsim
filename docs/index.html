@@ -44,8 +44,6 @@
     <h3 align="middle">Pinning the cloth to a bowl</h3>
       <p>First, we needed to make sure the soup would stay in place when the simulation began. Simply pinning the four corners of the cloth was not enough, as the other point masses in the perimeter of the square-shaped cloth would not behave in a soup-like manner, dangling across the bowl and such. Hence, we wrote an algorithm that pinned point masses that were a small distance away from the outer circle of the bowl, such that point masses along a circle outlining the bowl’s edge were all pinned, making sure the soup stays in the bowl.</p>
 
-      <p>However, as the cloth is a square and the bowl has a circular shape, the four corners of the cloth were still outside of the bowl, as they were on the outer side of the bowl perimeter. To remedy this, we pinned the four corners of the cloth and also moved their positions down slightly to make the corners less visible.</p>
-
     <h3 align="middle">Adding textures</h3>
       <p>An important part of photorealistic soup renderings is texturing. In the project 4 texturing code, the same texture was applied to every object in the scene. However, we needed to apply different textures to different elements of the scene; for example, applying a porcelain texture to the bowl and a plain soup-colored texture to the soup. To do this, we had to learn some basic OpenGL in order to properly bind textures to these objects. In particular, we referenced this link to assign unique textures. We also had to assign IDs to the different collision objects so that we could identify which texture belonged to which object. Most of this code is in <code>clothSimulator.cpp</code>.</p>
 
